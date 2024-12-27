@@ -22,6 +22,18 @@ func NewOrderController(orderService *services.OrderService) *OrderController {
 }
 
 // PlaceOrder handles the request to place a new order
+// @Summary Place a new order
+// @Description Create a new order with the provided details for the authenticated user
+// @Tags Orders
+// @Accept json
+// @Produce json
+// @Param order body models.Order true "Order object containing items and shipping details"
+// @Success 201 {object} models.Order "Successfully created order"
+// @Failure 400 {object} gin.H "Invalid input or malformed request body"
+// @Failure 401 {object} gin.H "User not authenticated or invalid authentication token"
+// @Failure 500 {object} gin.H "Internal server error while processing the order"
+// @Security ApiKeyAuth
+// @Router /orders [post]
 func (oc *OrderController) PlaceOrder(c *gin.Context) {
 	var order models.Order
 
@@ -66,25 +78,28 @@ func (oc *OrderController) PlaceOrder(c *gin.Context) {
 }
 
 // ListOrders handles the request to list all orders for a specific user.
+// @Summary List all orders for a user
+// @Description Retrieve all orders placed by the authenticated user
+// @Tags Orders
+// @Produce json
+// @Success 200 {array} models.Order
+// @Failure 401 {object} gin.H{"error": "User not authenticated"}
+// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Router /orders [get]
 func (oc *OrderController) ListOrders(c *gin.Context) {
-	// Retrieve the user ID from the context (set by the middleware)
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
 
-	// Convert userID to uint (assuming userID is a string in the token)
 	uid, err := strconv.Atoi(userID.(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
-	// Convert int to uint before passing to GetOrdersByUser
 	uidUint := uint(uid)
-
-	// Pass the uint to the service method
 	orders, err := oc.OrderService.GetOrdersByUser(uidUint)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -95,73 +110,74 @@ func (oc *OrderController) ListOrders(c *gin.Context) {
 }
 
 // CancelOrder handles the request to cancel an order
+// @Summary Cancel an order
+// @Description Cancel a specific order by ID
+// @Tags Orders
+// @Produce json
+// @Param id path int true "Order ID"
+// @Success 200 {object} gin.H{"message": "Order canceled successfully"}
+// @Failure 400 {object} gin.H{"error": "Invalid order ID"}
+// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Router /orders/{id} [delete]
 func (oc *OrderController) CancelOrder(c *gin.Context) {
-	// Retrieve the order ID from the request URL parameter
 	orderID := c.Param("id")
-
-	// Convert the order ID from string to uint
 	oid, err := strconv.ParseUint(orderID, 10, 32)
 	if err != nil {
-		// If there is an error in parsing the order ID, return a bad request response
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid order ID"})
 		return
 	}
 
-	// Convert uint64 to uint before passing it to the CancelOrder method
 	oidUint := uint(oid)
-
-	// Call the CancelOrder method in the service
 	if err := oc.OrderService.CancelOrder(oidUint); err != nil {
-		// If there is an error in canceling the order, return an internal server error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return a successful cancellation message with a 200 OK status
 	c.JSON(http.StatusOK, gin.H{"message": "Order canceled successfully"})
 }
 
 // UpdateOrderStatus handles the request to update the status of an order
+// @Summary Update order status
+// @Description Update the status of a specific order
+// @Tags Orders
+// @Accept json
+// @Produce json
+// @Param id path int true "Order ID"
+// @Param status body string true "Order status (Pending, Completed, Cancelled)"
+// @Success 200 {object} gin.H{"message": "Order status updated"}
+// @Failure 400 {object} gin.H{"error": "Invalid input or status"}
+// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Router /orders/{id}/status [put]
 func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
 	orderID := c.Param("id")
-
-	// Log the orderID to check if it's correctly extracted from the URL
 	fmt.Println("Received order ID:", orderID)
 
-	// Define a struct to hold the status from the request body
 	var statusUpdate struct {
 		Status string `json:"status" binding:"required"`
 	}
 
-	// Bind the request body to the statusUpdate struct
 	if err := c.ShouldBindJSON(&statusUpdate); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
-	// Validate the status
 	if !isValidStatus(statusUpdate.Status) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status. Valid values are: Pending, Completed, Cancelled"})
 		return
 	}
 
-	// Convert orderID from string to int
 	oid, err := strconv.Atoi(orderID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid order ID"})
 		return
 	}
 
-	// Convert from int to uint before passing to the service
 	oidUint := uint(oid)
-
-	// Update the order status
 	if err := oc.OrderService.UpdateOrderStatus(oidUint, statusUpdate.Status); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return a success message
 	c.JSON(http.StatusOK, gin.H{"message": "Order status updated"})
 }
 

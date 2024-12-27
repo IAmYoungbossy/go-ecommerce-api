@@ -1,11 +1,12 @@
 package main
 
 import (
+	_ "ecommerce-api/docs"
 	"ecommerce-api/internal/config"
 	"ecommerce-api/internal/controllers"
 	"ecommerce-api/internal/database"
 	"ecommerce-api/internal/logger"
-	"ecommerce-api/internal/models" // Import the models package
+	"ecommerce-api/internal/models"
 	"ecommerce-api/internal/repository"
 	"ecommerce-api/internal/routes"
 	"ecommerce-api/internal/services"
@@ -13,6 +14,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @title E-commerce API
+// @version 1.0
+// @description This is a sample e-commerce API for managing users, products, and orders.
+// @termsOfService http://example.com/terms/
+// @contact.name API Support
+// @contact.url http://example.com/support
+// @contact.email support@example.com
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host 127.0.0.1:9543
+// @BasePath /api
 func main() {
 	// Initialize the logger
 	logger.InitLogger()
@@ -29,9 +41,9 @@ func main() {
 
 	// Run migrations for all models
 	err = db.AutoMigrate(
-		&models.User{},    // Migration for User model
-		&models.Order{},   // Migration for Order model (you need to create Order model)
-		&models.Product{}, // Migration for Product model (you need to create Product model)
+		&models.User{},
+		&models.Order{},
+		&models.Product{},
 	)
 	if err != nil {
 		logger.Fatal("Error running migrations: " + err.Error())

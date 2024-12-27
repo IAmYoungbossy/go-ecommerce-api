@@ -21,6 +21,16 @@ func NewProductController(productService *services.ProductService) *ProductContr
 }
 
 // CreateProduct handles the creation of a new product.
+// @Summary Create a new product
+// @Description Creates a new product in the system
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param product body models.Product true "Product Data"
+// @Success 201 {object} models.Product
+// @Failure 400 {object} gin.H{"error": "Invalid input"}
+// @Failure 500 {object} gin.H{"error": "Could not create product"}
+// @Router /products [post]
 func (pc *ProductController) CreateProduct(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
@@ -37,6 +47,16 @@ func (pc *ProductController) CreateProduct(c *gin.Context) {
 }
 
 // GetProductByID retrieves a product by its ID.
+// @Summary Get a product by ID
+// @Description Retrieves a product by its unique ID
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} models.Product
+// @Failure 400 {object} gin.H{"error": "Invalid product ID"}
+// @Failure 500 {object} gin.H{"error": "Could not retrieve product"}
+// @Router /products/{id} [get]
 func (pc *ProductController) GetProductByID(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -59,6 +79,14 @@ func (pc *ProductController) GetProductByID(c *gin.Context) {
 }
 
 // GetProducts retrieves all products.
+// @Summary Get all products
+// @Description Retrieves all available products in the system
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.Product
+// @Failure 500 {object} gin.H{"error": "Could not retrieve products"}
+// @Router /products [get]
 func (pc *ProductController) GetProducts(c *gin.Context) {
 	products, err := pc.ProductService.GetProducts()
 	if err != nil {
@@ -70,6 +98,17 @@ func (pc *ProductController) GetProducts(c *gin.Context) {
 }
 
 // UpdateProduct handles the update of an existing product.
+// @Summary Update a product
+// @Description Updates an existing product in the system
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Param product body models.Product true "Updated Product Data"
+// @Success 200 {object} gin.H{"message": "Product updated successfully", "product": models.Product}
+// @Failure 400 {object} gin.H{"error": "Invalid product ID"}
+// @Failure 500 {object} gin.H{"error": "Could not update product"}
+// @Router /products/{id} [put]
 func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -106,6 +145,17 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 }
 
 // DeleteProduct handles the deletion of a product.
+// @Summary Delete a product
+// @Description Deletes a product by its ID
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} gin.H{"message": "Product deleted successfully"}
+// @Failure 400 {object} gin.H{"error": "Invalid product ID"}
+// @Failure 404 {object} gin.H{"error": "Product not found"}
+// @Failure 500 {object} gin.H{"error": "Could not delete product"}
+// @Router /products/{id} [delete]
 func (pc *ProductController) DeleteProduct(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)

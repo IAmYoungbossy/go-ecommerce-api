@@ -21,6 +21,15 @@ func NewUserController(userService *services.UserService) *UserController {
 }
 
 // RegisterUser handles user registration
+// @Summary Register a new user
+// @Description Registers a new user in the system
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User Information"
+// @Success 201 {object} gin.H{"message": "User registered successfully"}
+// @Failure 400 {object} gin.H{"error": "Invalid input"}
+// @Failure 500 {object} gin.H{"error": "Could not create user"}
+// @Router /users/register [post]
 func (uc *UserController) RegisterUser(c *gin.Context) {
 	var user models.User
 
@@ -49,7 +58,16 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
 }
 
-// Set Cookie with descriptive names and correct argument order
+// LoginUser handles user login
+// @Summary Log in an existing user
+// @Description Logs in a user and returns an authentication token
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "Login Credentials"
+// @Success 200 {object} gin.H{"token": "auth_token"}
+// @Failure 400 {object} gin.H{"error": "Invalid input"}
+// @Failure 401 {object} gin.H{"error": "Invalid credentials"}
+// @Router /users/login [post]
 func (uc *UserController) LoginUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -75,7 +93,11 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-// LogoutUser handles the logout functionality.
+// LogoutUser handles user logout
+// @Summary Log out a user
+// @Description Logs out a user and expires the authentication cookie
+// @Success 200 {object} gin.H{"message": "Successfully logged out"}
+// @Router /users/logout [post]
 func (uc *UserController) LogoutUser(c *gin.Context) {
 	// Expire the cookie
 	c.SetCookie("access_token", "", -1, "/", "", false, true)
@@ -87,6 +109,13 @@ func (uc *UserController) LogoutUser(c *gin.Context) {
 }
 
 // GetUser retrieves user information
+// @Summary Get user details
+// @Description Retrieves details of the authenticated user
+// @Produce  json
+// @Success 200 {object} models.User
+// @Failure 401 {object} gin.H{"error": "User ID not found in context"}
+// @Failure 500 {object} gin.H{"error": "Invalid user ID type in context"}
+// @Router /users/me [get]
 func (uc *UserController) GetUser(c *gin.Context) {
 	// Retrieve the user ID from the context
 	userID, exists := c.Get("userID")
@@ -112,6 +141,15 @@ func (uc *UserController) GetUser(c *gin.Context) {
 }
 
 // UpdateUser updates user information
+// @Summary Update user details
+// @Description Updates the details of the authenticated user
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "Updated User Information"
+// @Success 200 {object} gin.H{"message": "User updated successfully"}
+// @Failure 400 {object} gin.H{"error": "Invalid input"}
+// @Failure 500 {object} gin.H{"error": "Could not update user"}
+// @Router /users/me [put]
 func (uc *UserController) UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -128,6 +166,13 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser deletes a user
+// @Summary Delete a user
+// @Description Deletes a user from the system
+// @Param id path int true "User ID"
+// @Success 200 {object} gin.H{"message": "User deleted successfully"}
+// @Failure 400 {object} gin.H{"error": "Invalid user ID"}
+// @Failure 500 {object} gin.H{"error": "Could not delete user"}
+// @Router /users/{id} [delete]
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	// Get userID from URL parameter
 	userIDStr := c.Param("id")

@@ -1,10 +1,13 @@
 package routes
 
 import (
+	_ "ecommerce-api/docs"
 	"ecommerce-api/internal/auth"
 	"ecommerce-api/internal/controllers"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // SetupRoutes initializes the API routes and associates them with their respective controller methods.
@@ -14,6 +17,9 @@ func SetupRoutes(
 	productController *controllers.ProductController,
 	orderController *controllers.OrderController,
 ) {
+	// Swagger documentation route
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// User routes
 	router.POST("/api/users/login", userController.LoginUser)
 	router.POST("/api/users/logout", userController.LogoutUser)
