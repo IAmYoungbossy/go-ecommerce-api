@@ -31,11 +31,11 @@ func SetupRoutes(
 	authorizedAdmin.PUT("/api/products/:id", productController.UpdateProduct)
 	authorizedAdmin.GET("/api/products/:id", productController.GetProductByID)
 	authorizedAdmin.DELETE("/api/products/:id", productController.DeleteProduct)
+	authorizedAdmin.PUT("/api/orders/:id/status", orderController.UpdateOrderStatus)
 
 	// Order routes
 	authorized.GET("/api/users", userController.GetUser)
 	authorized.GET("/api/orders", orderController.ListOrders)
 	authorized.POST("/api/orders", orderController.PlaceOrder)
 	authorized.PUT("/api/orders/:id/cancel", orderController.CancelOrder)
-	authorized.PUT("/api/orders/:id/status", orderController.UpdateOrderStatus)
 }

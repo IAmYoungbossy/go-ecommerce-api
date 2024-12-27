@@ -5,7 +5,6 @@ import (
 )
 
 // Order represents an order in the e-commerce application.
-
 type Order struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
 	UserID    uint      `json:"user_id" gorm:"not null"`

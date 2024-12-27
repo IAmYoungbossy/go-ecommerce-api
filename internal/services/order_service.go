@@ -38,7 +38,7 @@ func (s *OrderService) CancelOrder(orderID uint) error {
 	if order.Status != "Pending" {
 		return errors.New("order cannot be canceled as it is not in Pending status")
 	}
-	return s.orderRepo.UpdateOrderStatus(orderID, "Canceled")
+	return s.orderRepo.UpdateOrderStatus(orderID, models.OrderStatusCancelled)
 }
 
 // UpdateOrderStatus updates the status of an order (admin privilege).
