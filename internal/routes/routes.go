@@ -24,11 +24,13 @@ func SetupRoutes(
 	authorized.Use(auth.JWTMiddleware())
 
 	// Product routes (admin only)
-	authorized.GET("/api/products", productController.GetProducts)
-	authorized.POST("/api/products", productController.CreateProduct)
-	authorized.PUT("/api/products/:id", productController.UpdateProduct)
-	authorized.GET("/api/products/:id", productController.GetProductByID)
-	authorized.DELETE("/api/products/:id", productController.DeleteProduct)
+	authorizedAdmin := authorized.Group("/")
+	authorizedAdmin.Use(auth.AdminMiddleware())
+	authorizedAdmin.GET("/api/products", productController.GetProducts)
+	authorizedAdmin.POST("/api/products", productController.CreateProduct)
+	authorizedAdmin.PUT("/api/products/:id", productController.UpdateProduct)
+	authorizedAdmin.GET("/api/products/:id", productController.GetProductByID)
+	authorizedAdmin.DELETE("/api/products/:id", productController.DeleteProduct)
 
 	// Order routes
 	authorized.GET("/api/users", userController.GetUser)

@@ -11,14 +11,15 @@ import (
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 // GenerateToken generates a JWT token with user information and expiration time
-func GenerateToken(userID string) (string, error) {
+func GenerateToken(userID string, userRole string) (string, error) {
 	// Define the expiration time (e.g., 1 hour)
-	expirationTime := time.Now().Add(time.Hour * 1) // Token expires in 1 hour
+	expirationTime := time.Now().Add(time.Hour * 1)
 
-	// Create JWT claims with userID and expiration time
+	// Create JWT claims with userID, role, and expiration time
 	claims := &jwt.MapClaims{
-		"sub": userID,
-		"exp": expirationTime.Unix(),
+		"sub":  userID,
+		"role": userRole,
+		"exp":  expirationTime.Unix(),
 	}
 
 	// Create a new JWT token with the claims

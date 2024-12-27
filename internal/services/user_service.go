@@ -35,7 +35,7 @@ func (s *UserService) RegisterUser(user *models.User) error {
 // AuthenticateUser authenticates a user and generates a JWT token
 func (s *UserService) AuthenticateUser(email, password string) (string, error) {
 	user, err := s.userRepo.GetUserByEmail(email)
-	if err != nil {
+	if err != nil || user == nil {
 		return "", errors.New("invalid email or password")
 	}
 
@@ -45,7 +45,8 @@ func (s *UserService) AuthenticateUser(email, password string) (string, error) {
 	}
 
 	userIDStr := strconv.Itoa(int(user.ID))
-	token, err := auth.GenerateToken(userIDStr)
+	// Pass both userID and role to GenerateToken
+	token, err := auth.GenerateToken(userIDStr, user.Role)
 	if err != nil {
 		return "", err
 	}

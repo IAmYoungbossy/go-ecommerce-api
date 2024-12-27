@@ -38,11 +38,13 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		// Extract user information from the token claims
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			// Extract the user ID from the "sub" claim (the "subject" of the token)
 			userID := claims["sub"].(string)
+			userRole := claims["role"].(string)
+
+			// Store user info in context for further use
 			c.Set("userID", userID)
+			c.Set("userRole", userRole)
 		} else {
-			// Invalid token claims
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
 			c.Abort()
 			return

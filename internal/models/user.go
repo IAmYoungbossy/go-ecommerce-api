@@ -11,6 +11,7 @@ import (
 // User represents the user model in the application.
 type User struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
+	Role      string    `json:"role" gorm:"default:user"`
 	Email     string    `json:"email" gorm:"unique;not null"`
 	Password  string    `json:"password" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`

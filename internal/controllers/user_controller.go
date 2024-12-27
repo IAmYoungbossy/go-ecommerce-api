@@ -23,12 +23,20 @@ func NewUserController(userService *services.UserService) *UserController {
 // RegisterUser handles user registration
 func (uc *UserController) RegisterUser(c *gin.Context) {
 	var user models.User
+
+	// Bind incoming JSON to the user struct
 	if err := c.ShouldBindJSON(&user); err != nil {
 		log.Printf("Binding error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
+	// Set default role if not provided
+	if user.Role == "" {
+		user.Role = "user"
+	}
+
+	// Register the user
 	if err := uc.UserService.RegisterUser(&user); err != nil {
 		log.Printf("Error creating user: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
