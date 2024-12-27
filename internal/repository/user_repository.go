@@ -40,6 +40,21 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+// GetUserByID retrieves a user by their ID.
+func (r *UserRepository) GetUserByID(userID string) (*models.User, error) {
+	var user models.User
+	// Using GORM First method to find the user by ID
+	if err := r.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil // User not found
+		}
+		return nil, fmt.Errorf("could not get user: %w", err)
+	}
+	// Remove the password
+	user.Password = ""
+	return &user, nil
+}
+
 // UpdateUser updates the user's information in the database.
 func (r *UserRepository) UpdateUser(user *models.User) error {
 	// Using GORM Save method to update the user's details

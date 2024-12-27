@@ -31,6 +31,7 @@ func SetupRoutes(
 	authorized.DELETE("/api/products/:id", productController.DeleteProduct)
 
 	// Order routes
+	authorized.GET("/api/users", userController.GetUser)
 	authorized.GET("/api/orders", orderController.ListOrders)
 	authorized.POST("/api/orders", orderController.PlaceOrder)
 	authorized.PUT("/api/orders/:id/cancel", orderController.CancelOrder)

@@ -80,8 +80,21 @@ func (uc *UserController) LogoutUser(c *gin.Context) {
 
 // GetUser retrieves user information
 func (uc *UserController) GetUser(c *gin.Context) {
-	email := c.Param("email")
-	user, err := uc.UserService.GetUserByEmail(email)
+	// Retrieve the user ID from the context
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	// Convert userID to string
+	userIDStr, ok := userID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID type in context"})
+		return
+	}
+
+	user, err := uc.UserService.GetUserByID(userIDStr)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return

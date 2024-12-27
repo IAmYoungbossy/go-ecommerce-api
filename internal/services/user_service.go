@@ -55,7 +55,7 @@ func (s *UserService) AuthenticateUser(email, password string) (string, error) {
 
 // LoginUser checks the user's credentials and returns an error if they are invalid.
 func (s *UserService) LoginUser(email, password string) (*models.User, error) {
-	user, err := s.userRepo.GetUserByEmail(email)
+	user, err := s.userRepo.GetUserByID(email)
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +68,8 @@ func (s *UserService) LoginUser(email, password string) (*models.User, error) {
 }
 
 // GetUser retrieves a user by their ID.
-func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
-	return s.userRepo.GetUserByEmail(email)
+func (s *UserService) GetUserByID(email string) (*models.User, error) {
+	return s.userRepo.GetUserByID(email)
 }
 
 // UpdateUser updates the user's information in the database.

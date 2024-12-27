@@ -11,7 +11,7 @@ import (
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the token from the cookie
-		tokenString, err := c.Cookie("auth_token")
+		tokenString, err := c.Cookie("access_token")
 		if err != nil {
 			// If the cookie is not found, respond with unauthorized
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization cookie is missing"})
