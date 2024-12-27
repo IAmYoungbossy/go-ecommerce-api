@@ -46,12 +46,12 @@ func (s *ProductService) GetProducts() ([]models.Product, error) {
 // UpdateProduct validates and updates an existing product.
 func (s *ProductService) UpdateProduct(product *models.Product) (*models.Product, error) {
 	// Log the incoming product
-	fmt.Println("Received product for update: ", product) // Debugging log
+	fmt.Println("Received product for update: ", product)
 
 	// Call repository to update the product
 	updatedProduct, err := s.repo.UpdateProduct(product)
 	if err != nil {
-		fmt.Println("Error in repository update: ", err) // Debugging log
+		fmt.Println("Error in repository update: ", err)
 		return nil, err
 	}
 

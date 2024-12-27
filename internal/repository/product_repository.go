@@ -49,35 +49,35 @@ func (r *productRepository) UpdateProduct(updatedProduct *models.Product) (*mode
 	// Find the existing product by ID
 	var existingProduct models.Product
 	if err := r.db.First(&existingProduct, updatedProduct.ID).Error; err != nil {
-		fmt.Println("Product not found: ", err)     // Debugging log
-		return nil, fmt.Errorf("product not found") // Return a more explicit error message
+		fmt.Println("Product not found: ", err)
+		return nil, fmt.Errorf("product not found")
 	}
 
 	// Update fields only if they are provided (i.e., non-zero values)
 	if updatedProduct.Name != "" {
-		fmt.Println("Updating Name: ", updatedProduct.Name) // Debugging log
+		fmt.Println("Updating Name: ", updatedProduct.Name)
 		existingProduct.Name = updatedProduct.Name
 	}
 	if updatedProduct.Description != "" {
-		fmt.Println("Updating Description: ", updatedProduct.Description) // Debugging log
+		fmt.Println("Updating Description: ", updatedProduct.Description)
 		existingProduct.Description = updatedProduct.Description
 	}
 	if updatedProduct.Price != 0 {
-		fmt.Println("Updating Price: ", updatedProduct.Price) // Debugging log
+		fmt.Println("Updating Price: ", updatedProduct.Price)
 		existingProduct.Price = updatedProduct.Price
 	}
 	if updatedProduct.Stock != 0 {
-		fmt.Println("Updating Stock: ", updatedProduct.Stock) // Debugging log
+		fmt.Println("Updating Stock: ", updatedProduct.Stock)
 		existingProduct.Stock = updatedProduct.Stock
 	}
 
 	// Save the updated product back to the database
 	if err := r.db.Save(&existingProduct).Error; err != nil {
-		fmt.Println("Error saving updated product: ", err) // Debugging log
+		fmt.Println("Error saving updated product: ", err)
 		return nil, err
 	}
 
-	return &existingProduct, nil // Return the updated product
+	return &existingProduct, nil
 }
 
 // DeleteProduct removes a product from the database.

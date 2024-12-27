@@ -74,14 +74,14 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		fmt.Println("Invalid ID provided: ", idStr) // Debugging log
+		fmt.Println("Invalid ID provided: ", idStr)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
 		return
 	}
 
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
-		fmt.Println("Error binding JSON: ", err) // Debugging log
+		fmt.Println("Error binding JSON: ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
@@ -92,7 +92,7 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	// Call the service to update the product and handle returned error
 	updatedProduct, err := pc.ProductService.UpdateProduct(&product)
 	if err != nil {
-		fmt.Println("Error updating product: ", err) // Debugging log
+		fmt.Println("Error updating product: ", err)
 		if err.Error() == "product not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		} else {
