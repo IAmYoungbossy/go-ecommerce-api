@@ -4,6 +4,7 @@ import (
 	"ecommerce-api/internal/models"
 	"ecommerce-api/internal/repository"
 	"errors"
+	"fmt"
 )
 
 // ProductService defines the service for managing products.
@@ -43,11 +44,18 @@ func (s *ProductService) GetProducts() ([]models.Product, error) {
 }
 
 // UpdateProduct validates and updates an existing product.
-func (s *ProductService) UpdateProduct(product *models.Product) error {
-	if err := validateProduct(product); err != nil {
-		return err
+func (s *ProductService) UpdateProduct(product *models.Product) (*models.Product, error) {
+	// Log the incoming product
+	fmt.Println("Received product for update: ", product) // Debugging log
+
+	// Call repository to update the product
+	updatedProduct, err := s.repo.UpdateProduct(product)
+	if err != nil {
+		fmt.Println("Error in repository update: ", err) // Debugging log
+		return nil, err
 	}
-	return s.repo.UpdateProduct(product)
+
+	return updatedProduct, nil
 }
 
 // DeleteProduct removes a product by its ID.

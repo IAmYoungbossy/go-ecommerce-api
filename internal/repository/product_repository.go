@@ -2,17 +2,19 @@ package repository
 
 import (
 	"ecommerce-api/internal/models"
+	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
-// ProductRepository defines the interface for product-related database operations.
+// ProductRepository defines the methods for interacting with the products in the database.
 type ProductRepository interface {
 	CreateProduct(product *models.Product) error
-	GetProductByID(id uint) (*models.Product, error)
-	UpdateProduct(product *models.Product) error
 	DeleteProduct(id uint) error
 	GetAllProducts() ([]models.Product, error)
+	GetProductByID(id uint) (*models.Product, error)
+	UpdateProduct(updatedProduct *models.Product) (*models.Product, error)
 }
 
 // productRepository implements the ProductRepository interface.
@@ -42,20 +44,49 @@ func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 	return &product, nil
 }
 
-// UpdateProduct updates an existing product in the database.
-func (r *productRepository) UpdateProduct(product *models.Product) error {
-	if err := r.db.Save(product).Error; err != nil {
-		return err
+// UpdateProduct updates a product in the database based on the provided updated product fields.
+func (r *productRepository) UpdateProduct(updatedProduct *models.Product) (*models.Product, error) {
+	// Find the existing product by ID
+	var existingProduct models.Product
+	if err := r.db.First(&existingProduct, updatedProduct.ID).Error; err != nil {
+		fmt.Println("Product not found: ", err)     // Debugging log
+		return nil, fmt.Errorf("product not found") // Return a more explicit error message
 	}
-	return nil
+
+	// Update fields only if they are provided (i.e., non-zero values)
+	if updatedProduct.Name != "" {
+		fmt.Println("Updating Name: ", updatedProduct.Name) // Debugging log
+		existingProduct.Name = updatedProduct.Name
+	}
+	if updatedProduct.Description != "" {
+		fmt.Println("Updating Description: ", updatedProduct.Description) // Debugging log
+		existingProduct.Description = updatedProduct.Description
+	}
+	if updatedProduct.Price != 0 {
+		fmt.Println("Updating Price: ", updatedProduct.Price) // Debugging log
+		existingProduct.Price = updatedProduct.Price
+	}
+	if updatedProduct.Stock != 0 {
+		fmt.Println("Updating Stock: ", updatedProduct.Stock) // Debugging log
+		existingProduct.Stock = updatedProduct.Stock
+	}
+
+	// Save the updated product back to the database
+	if err := r.db.Save(&existingProduct).Error; err != nil {
+		fmt.Println("Error saving updated product: ", err) // Debugging log
+		return nil, err
+	}
+
+	return &existingProduct, nil // Return the updated product
 }
 
 // DeleteProduct removes a product from the database.
 func (r *productRepository) DeleteProduct(id uint) error {
-	if err := r.db.Delete(&models.Product{}, id).Error; err != nil {
-		return err
+	result := r.db.Delete(&models.Product{}, id)
+	if result.RowsAffected == 0 {
+		return errors.New("product not found")
 	}
-	return nil
+	return result.Error
 }
 
 // GetAllProducts retrieves all products from the database.
